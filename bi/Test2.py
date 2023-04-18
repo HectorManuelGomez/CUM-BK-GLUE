@@ -17,8 +17,6 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
-#yesterday_datetime = datetime.now() - timedelta(days=1)
-#yesterday_date = yesterday_datetime.strftime('%Y-%m-%d')
 today_date = datetime.now().strftime('%Y-%m-%d')
 
 #Definiciones DynamicFrame
@@ -34,7 +32,7 @@ ComisionesHistorico = glueContext.create_dynamic_frame.from_catalog(
     database="pdp-bi",
     table_name="transacciones_pdp_public_tbl_comisiones_historico",
     transformation_ctx="ComisionesHistorico",
-    additional_options = {"sampleQuery":"select * from public.tbl_comisiones_historico where fecha::text LIKE '"+today_date+"%'"}
+    additional_options = {"sampleQuery":"select fk_tipo_comision_historica, id_trx, comision_total, id_tipo_transaccion, valor_trx from public.tbl_comisiones_historico where fecha::text LIKE '"+today_date+"%'"}
 )
 
 TiposContratoComisiones = (
@@ -42,6 +40,7 @@ TiposContratoComisiones = (
         database="pdp-bi",
         table_name="transacciones_pdp_public_tipos_contrato_comisiones",
         transformation_ctx="TiposContratoComisiones",
+        additional_options = {"sampleQuery":"select id_tipo_contrato, nombre_contrato from public.tipos_contrato_comisiones"}
     )
 )
 
@@ -49,6 +48,7 @@ Autorizadores = glueContext.create_dynamic_frame.from_catalog(
     database="pdp-bi",
     table_name="transacciones_pdp_public_autorizadores",
     transformation_ctx="Autorizadores",
+    additional_options = {"sampleQuery":"select id_tipo_contrato, id_autorizador, nombre_autorizador from public.autorizadores"}
 )
 
 TipoComision = glueContext.create_dynamic_frame.from_catalog(
